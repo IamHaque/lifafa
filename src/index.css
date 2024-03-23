@@ -30,7 +30,20 @@ body {
 }
 
 .envelope {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
   max-width: min(50%, 10em);
+}
+
+.envelope div {
+  position: absolute;
+}
+
+.envelope img {
+  width: 100%;
+  position: relative;
 
   animation-duration: 1s;
   animation-name: stretch;
@@ -38,7 +51,6 @@ body {
   animation-direction: alternate;
   animation-iteration-count: infinite;
   animation-timing-function: ease-in-out;
-  position: relative;
 }
 
 @keyframes stretch {
@@ -63,12 +75,12 @@ body {
   max-width: min(calc(100% - 2em), 30em);
 }
 
-.wrapper[data-visible='hidden'] {
+*[data-visible='hidden'] {
   opacity: 0;
   transform: scale(0);
 }
 
-.wrapper[data-visible='visible'] {
+*[data-visible='visible'] {
   opacity: 1;
   transform: scale(1);
 }
@@ -154,7 +166,7 @@ h4 {
   flex-direction: column;
 }
 
-.claim .inputForm div {
+.claim .inputForm form {
   gap: 0.5em;
   display: grid;
   grid-template-columns: 1fr auto;

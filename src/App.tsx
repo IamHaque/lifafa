@@ -1,28 +1,36 @@
 import axios from 'axios';
+import Confetti from 'react-confetti';
 import { useEffect, useState } from 'react';
+import useWindowSize from 'react-use/lib/useWindowSize';
+import ConfettiExplosion, { ConfettiProps } from 'react-confetti-explosion';
 
 import openEnvelope from './assets/envelope_open.png';
 import closedEnvelope from './assets/envelope_closed.png';
 
 import { Lifafa } from './types';
-import { BASE_URL, API_HEADER } from './utils';
+import { BASE_URL, API_HEADER, largeExplosion } from './utils';
+import { claimLifafa, getLifafaById } from './service';
 
 import LifafaClaim from './Components/Claim';
 import LifafaNotFound from './Components/NotFound';
 import LifafaClaimFailure from './Components/ClaimFailure';
 import LifafaClaimSuccess from './Components/ClaimSuccess';
-import { claimLifafa, getLifafaById } from './service';
 
 export default function App() {
+  const { width, height } = useWindowSize();
+
   const [upiId, setUpiId] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [isExploding, setIsExploding] = useState(false);
   const [lifafa, setLifafa] = useState<Lifafa | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  const [hasClaimed, setHasClaimed] = useState(false);
   const [claimLoading, setClaimLoading] = useState(false);
+  const [numberOfPieces, setNumberOfPieces] = useState(200);
   const [claimedAmount, setClaimedAmount] = useState<string | null>(null);
 
   useEffect(() => {
@@ -52,8 +60,21 @@ export default function App() {
     fetchLifafa();
   }, []);
 
+  const celebrate = () => {
+    setHasClaimed(true);
+
+    setTimeout(() => {
+      setNumberOfPieces(0);
+    }, 3000);
+
+    setTimeout(() => {
+      setHasClaimed(false);
+    }, 5000);
+  };
+
   const handleClick = () => {
     setIsOpen(!isOpen);
+    setIsExploding(true);
   };
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +86,9 @@ export default function App() {
     setUpiId(e.target.value);
   };
 
-  const handleVerification = async () => {
+  const handleVerification = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     setError(null);
     setSuccess(null);
     setLoading(true);
@@ -103,6 +126,8 @@ export default function App() {
         setError('Error claiming lifafa');
       }
 
+      celebrate();
+
       setClaimedAmount(claimedAmount);
       setLifafa(lifafaData);
 
@@ -121,12 +146,24 @@ export default function App() {
 
   return (
     <div className="container">
-      <img
-        alt="envelope"
-        className="envelope"
-        onClick={handleClick}
-        src={isOpen ? openEnvelope : closedEnvelope}
-      />
+      {hasClaimed && (
+        <Confetti
+          width={width}
+          height={height}
+          numberOfPieces={numberOfPieces}
+        />
+      )}
+
+      <div className="envelope">
+        <div>{isExploding && <ConfettiExplosion {...largeExplosion} />}</div>
+
+        <img
+          alt="envelope"
+          onClick={handleClick}
+          src={isOpen ? openEnvelope : closedEnvelope}
+          data-visible={`${isOpen ? 'hidden' : 'visible'}`}
+        />
+      </div>
 
       <div
         className="wrapper"

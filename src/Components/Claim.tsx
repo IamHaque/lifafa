@@ -11,8 +11,8 @@ interface LifafaClaimProps {
   success: string | null;
   claimLoading: boolean;
   handleClaim: () => void;
-  handleVerification: () => void;
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleVerification: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
 function LifafaClaim({
@@ -43,17 +43,17 @@ function LifafaClaim({
         <div
           className={`inputForm ${error && 'error'} ${success && 'success'}`}
         >
-          <div>
+          <form onSubmit={handleVerification}>
             <input
               value={upiId}
               onChange={handleInput}
               placeholder="Enter UPI ID"
             />
 
-            <button disabled={loading} onClick={handleVerification}>
+            <button disabled={loading} type="submit">
               <img src={searchIcon} alt="Verify" />
             </button>
-          </div>
+          </form>
           {error && <small className="error">{error}</small>}
           {success && <small className="success">{success}</small>}
           {!error && !success && <small>eg, 9127382733@ybl</small>}

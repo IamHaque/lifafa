@@ -1,4 +1,4 @@
-import Counter from '../Counter';
+import Counter from './Counter';
 
 import { Lifafa } from '../types';
 import { formatDate } from '../utils';
