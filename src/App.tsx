@@ -2,7 +2,7 @@ import axios from 'axios';
 import Confetti from 'react-confetti';
 import { useEffect, useState } from 'react';
 import useWindowSize from 'react-use/lib/useWindowSize';
-import ConfettiExplosion, { ConfettiProps } from 'react-confetti-explosion';
+import ConfettiExplosion from 'react-confetti-explosion';
 
 import openEnvelope from './assets/envelope_open.png';
 import closedEnvelope from './assets/envelope_closed.png';
