@@ -29,6 +29,11 @@ body {
   justify-content: center;
 }
 
+.pageLoading {
+  color: #eee;
+  letter-spacing: 1px;
+}
+
 .envelope {
   display: flex;
   position: relative;

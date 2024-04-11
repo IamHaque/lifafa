@@ -25,6 +25,7 @@ export default function App() {
   const [lifafa, setLifafa] = useState<Lifafa | null>(null);
 
   const [loading, setLoading] = useState(false);
+  const [pageLoaded, setPageLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -37,7 +38,10 @@ export default function App() {
     const fetchLifafa = async () => {
       const searchParams = new URLSearchParams(document.location.search);
       const LIFAFA_ID = searchParams.get('lifafaId');
-      if (!LIFAFA_ID) return;
+      if (!LIFAFA_ID) {
+        setPageLoaded(true);
+        return;
+      }
 
       let localLifafa = localStorage.getItem('lifafa_' + LIFAFA_ID);
 
@@ -48,11 +52,13 @@ export default function App() {
         } catch (err: any) {
           setLifafa(null);
         }
+        setPageLoaded(true);
         return;
       }
 
       const { claimedAmount, ...lifafaData } = JSON.parse(localLifafa);
 
+      setPageLoaded(true);
       setLifafa(lifafaData);
       setClaimedAmount(claimedAmount);
     };
@@ -144,6 +150,14 @@ export default function App() {
     }
   };
 
+  if (!pageLoaded) {
+    return (
+      <div className="container">
+        <h1 className="pageLoading">Loading...</h1>
+      </div>
+    );
+  }
+
   return (
     <div className="container">
       {hasClaimed && (
@@ -154,45 +168,45 @@ export default function App() {
         />
       )}
 
-      <div className="envelope">
-        <div>{isExploding && <ConfettiExplosion {...largeExplosion} />}</div>
+      {!isOpen && (
+        <div className="envelope">
+          <div>{isExploding && <ConfettiExplosion {...largeExplosion} />}</div>
 
-        <img
-          alt="envelope"
-          onClick={handleClick}
-          src={isOpen ? openEnvelope : closedEnvelope}
-          data-visible={`${isOpen ? 'hidden' : 'visible'}`}
-        />
-      </div>
-
-      <div
-        className="wrapper"
-        data-visible={`${isOpen ? 'visible' : 'hidden'}`}
-      >
-        {lifafa && !lifafa.errorMessage && !claimedAmount && (
-          <LifafaClaim
-            error={error}
-            upiId={upiId}
-            lifafa={lifafa}
-            success={success}
-            loading={loading}
-            handleInput={handleInput}
-            handleClaim={handleClaim}
-            claimLoading={claimLoading}
-            handleVerification={handleVerification}
+          <img
+            alt="envelope"
+            onClick={handleClick}
+            src={isOpen ? openEnvelope : closedEnvelope}
           />
-        )}
+        </div>
+      )}
 
-        {lifafa && !lifafa.errorMessage && claimedAmount && (
-          <LifafaClaimSuccess lifafa={lifafa} claimedAmount={claimedAmount} />
-        )}
+      {isOpen && (
+        <div className="wrapper">
+          {lifafa && !lifafa.errorMessage && !claimedAmount && (
+            <LifafaClaim
+              error={error}
+              upiId={upiId}
+              lifafa={lifafa}
+              success={success}
+              loading={loading}
+              handleInput={handleInput}
+              handleClaim={handleClaim}
+              claimLoading={claimLoading}
+              handleVerification={handleVerification}
+            />
+          )}
 
-        {lifafa && lifafa.errorMessage && (
-          <LifafaClaimFailure lifafa={lifafa} />
-        )}
+          {lifafa && !lifafa.errorMessage && claimedAmount && (
+            <LifafaClaimSuccess lifafa={lifafa} claimedAmount={claimedAmount} />
+          )}
 
-        {!lifafa && <LifafaNotFound />}
-      </div>
+          {lifafa && lifafa.errorMessage && (
+            <LifafaClaimFailure lifafa={lifafa} />
+          )}
+
+          {!lifafa && <LifafaNotFound />}
+        </div>
+      )}
     </div>
   );
 }
